@@ -35,7 +35,9 @@ class AuthRemoteDataSource {
         // retrieve token
         String token = response.data["data"]["Token"];
 
-        await userSharedPrefs.setUserToken(token);
+        String empCode = response.data["data"]["EmpCode"];
+
+        await userSharedPrefs.setUserToken(token, empCode);
 
         return const Right(true);
       } else {

@@ -25,9 +25,20 @@ class ExceededHoursRemoteDataSource {
 
   Future<Either<Failure, Response>> getExceededHours(
       {NepaliDateTime? startDate, NepaliDateTime? endDate}) async {
+    final data = await userSharedPrefs.getEmpCode();
     final tokenData = await userSharedPrefs.getUserToken();
 
+    String? empCode;
     String? token;
+
+    data.fold(
+      (failure) {
+        // Failure Case
+      },
+      (empCodeValue) {
+        empCode = empCodeValue;
+      },
+    );
 
     tokenData.fold(
       (failure) {
@@ -37,9 +48,10 @@ class ExceededHoursRemoteDataSource {
         token = tokenValue;
       },
     );
+
     try {
       Response response = await dio.get(
-        "${ApiEndpoints.baseUrl}/${ApiEndpoints.getExceededHours}?Token=$token&StartDateNepali=${startDate?.format('yyyy/MM/dd')}&EndDateNepali=${endDate?.format('yyyy/MM/dd')}&CurrentPage=1&ItemPerPage=1&EmpCode=E00070",
+        "${ApiEndpoints.baseUrl}/${ApiEndpoints.getExceededHours}?Token=$token&StartDateNepali=${startDate?.format('yyyy/MM/dd')}&EndDateNepali=${endDate?.format('yyyy/MM/dd')}&CurrentPage=1&ItemPerPage=1&EmpCode=$empCode",
         options: Options(
           headers: {
             "authorization": 'Bearer $token',

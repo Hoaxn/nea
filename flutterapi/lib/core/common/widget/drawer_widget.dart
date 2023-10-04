@@ -11,8 +11,6 @@ class CustomDrawer extends ConsumerStatefulWidget {
 }
 
 class _CustomDrawerState extends ConsumerState<CustomDrawer> {
-  late bool isDark;
-
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
@@ -43,7 +41,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                   ),
                   IconButton(
                     onPressed: () {
-                      Navigator.pop(context); // Close the drawer
+                      Navigator.pop(context);
                     },
                     icon: const Icon(
                       Icons.close,
