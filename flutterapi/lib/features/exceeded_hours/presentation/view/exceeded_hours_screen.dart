@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterapi/core/common/snackbar/snackbar.dart';
 import 'package:flutterapi/core/common/widget/drawer_widget.dart';
-import 'package:flutterapi/features/nea_api/data/data_source/nea_api_remote_data_source.dart';
-import 'package:flutterapi/features/nea_api/presentation/viewmodel/nea_api_viewmodel.dart';
-import 'package:flutterapi/features/nea_api/presentation/widget/paginated_table.dart';
+import 'package:flutterapi/features/exceeded_hours/data/data_source/exceeded_hours_data_source.dart';
+import 'package:flutterapi/features/exceeded_hours/presentation/viewmodel/exceeded_hours_viewmodel.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
 
-class NeaApiScreen extends ConsumerStatefulWidget {
-  const NeaApiScreen({super.key});
+class SevenHourExceededScreen extends ConsumerStatefulWidget {
+  const SevenHourExceededScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _NeaApiScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _SevenHourExceededScreenState();
 }
 
-class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
+class _SevenHourExceededScreenState
+    extends ConsumerState<SevenHourExceededScreen> {
   final _language = Language.english;
 
   final _dateOrder = DateOrder.ymd;
@@ -44,7 +45,7 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
         }
       });
 
-      await ref.read(neaApiRemoteDataSourceProvider).getData(
+      await ref.read(exceededHoursRemoteDataSourceProvider).getExceededHours(
             startDate: startDate,
             endDate: endDate,
           );
@@ -52,8 +53,9 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
   }
 
   Future<void> _handleRefresh() async {
-    final neaApiRefresh = ref.read(neaApiViewModelProvider.notifier);
-    await neaApiRefresh.getData(
+    final exceededHoursRefresh =
+        ref.read(exceededHoursViewModelProvider.notifier);
+    await exceededHoursRefresh.getExceededHours(
       startDate: startDate,
       endDate: endDate,
     );
@@ -68,7 +70,7 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final neaApiDataView = ref.watch(neaApiViewModelProvider);
+    final exceededHoursDataView = ref.watch(exceededHoursViewModelProvider);
 
     const gap = SizedBox(
       height: 10,
@@ -97,7 +99,7 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                         child: const Icon(Icons.menu),
                       ),
                       const Text(
-                        "API Call",
+                        "Exceeded Hours Report",
                         style: TextStyle(
                           fontSize: 25.0,
                           fontWeight: FontWeight.w800,
@@ -167,9 +169,9 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                       );
                                     } else {
                                       await ref
-                                          .read(
-                                              neaApiViewModelProvider.notifier)
-                                          .getData(
+                                          .read(exceededHoursViewModelProvider
+                                              .notifier)
+                                          .getExceededHours(
                                             startDate: startDate,
                                             endDate: endDate,
                                           );
@@ -190,11 +192,12 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                             ),
                           ),
                         ),
-                        if (neaApiDataView.isLoading) ...{
+                        if (exceededHoursDataView.isLoading) ...{
                           const Center(
                             child: CircularProgressIndicator(),
                           )
-                        } else if (neaApiDataView.employeeDetails.isEmpty) ...{
+                        } else if (exceededHoursDataView
+                            .exceededHours.isEmpty) ...{
                           const Center(
                             child: Text(
                               "No Data",
@@ -209,10 +212,11 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                             padding: const EdgeInsets.only(top: 10.0),
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: neaApiDataView.employeeDetails.length,
+                            itemCount:
+                                exceededHoursDataView.exceededHours.length,
                             itemBuilder: (content, index) {
-                              final neaApiData =
-                                  neaApiDataView.employeeDetails[index];
+                              final exceededHoursData =
+                                  exceededHoursDataView.exceededHours[index];
 
                               return Padding(
                                 padding: const EdgeInsets.only(
@@ -248,7 +252,7 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                                     children: [
                                                       Flexible(
                                                         child: Text(
-                                                          neaApiData
+                                                          exceededHoursData
                                                               .employeeName,
                                                           style:
                                                               const TextStyle(
@@ -263,7 +267,7 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                                   ),
                                                   gap,
                                                   Text(
-                                                    neaApiData.empCode,
+                                                    exceededHoursData.empCode,
                                                     style: const TextStyle(
                                                       fontSize: 17.0,
                                                       fontWeight:
@@ -272,7 +276,8 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                                   ),
                                                   gap,
                                                   Text(
-                                                    neaApiData.employeeLevel,
+                                                    exceededHoursData
+                                                        .employeeLevel,
                                                     style: const TextStyle(
                                                       fontSize: 15.0,
                                                       fontWeight:
@@ -281,7 +286,8 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                                   ),
                                                   gap,
                                                   Text(
-                                                    neaApiData.employmentType,
+                                                    exceededHoursData
+                                                        .employmentType,
                                                     style: const TextStyle(
                                                       fontSize: 15.0,
                                                       fontWeight:
@@ -290,8 +296,19 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                                   ),
                                                   gap,
                                                   Text(
-                                                    neaApiData.designation
-                                                        .toString(),
+                                                    exceededHoursData
+                                                        .designation,
+                                                    style: const TextStyle(
+                                                      fontSize: 15.0,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  gap,
+                                                  Text(
+                                                    exceededHoursData
+                                                            .exceededHours ??
+                                                        'N/A',
                                                     style: const TextStyle(
                                                       fontSize: 15.0,
                                                       fontWeight:
@@ -309,21 +326,6 @@ class _NeaApiScreenState extends ConsumerState<NeaApiScreen> {
                                 ),
                               );
                             },
-                          ),
-                          PaginatedDataTable(
-                            dataRowMinHeight: 10.0,
-                            dataRowMaxHeight: 50.0,
-                            columnSpacing: 50.0,
-                            headingRowHeight: 50.0,
-                            columns: const [
-                              DataColumn(label: Text('Date')),
-                              DataColumn(label: Text('InTime')),
-                              DataColumn(label: Text('OutTime')),
-                              DataColumn(label: Text('Status')),
-                            ],
-                            source: MyTableDataSource(
-                                neaApiDataView.attendanceRecords),
-                            rowsPerPage: 10,
                           ),
                         },
                       ],

@@ -8,4 +8,6 @@ class ApiEndpoints {
   static const String login = "/selfservicev2/ApiSecurity/ApiLogin";
   static const String getData =
       "/selfservicev2/NEAReportsApi/PersonalDailyReport";
+  static const String getExceededHours =
+      "/selfservicev2/NEAReportsApi/SevenHoursExceddedReport";
 }
